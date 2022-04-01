@@ -27,7 +27,7 @@ main %>%
 # significant differences across regions?
 main %>%
   filter(sampyear == 2004) %>%
-  count(gormain, anycd_ic) %>%
+  count(gormain, anycd_ic, wt = NULL) %>%
   group_by(gormain) %>%
   mutate(prop = prop.table(n),
          total = sum(n)) %>%
@@ -42,9 +42,9 @@ main %>%
                      name = "Proportion") +
   labs(title = "Rates of behavioural disorder")
 
-plot_cd_rates <- function(myData, myVar) {
+plot_cd_rates <- function(myData, myVar, myWeight = NULL) {
   myData %>%
-    count({{myVar}}, anycd_ic) %>%
+    count({{myVar}}, anycd_ic, wt = {{myWeight}}) %>%
     group_by({{myVar}}) %>%
     mutate(prop = prop.table(n),
            total = sum(n)) %>%
@@ -62,7 +62,8 @@ plot_cd_rates <- function(myData, myVar) {
 
 main %>%
   filter(sampyear == 2004) %>%
-  plot_cd_rates(gormain)
+  plot_cd_rates(gormain, weightsc)
+# probably shouldn't use the weights for this - CI should be based on the sample size you actually got, not what you wish it was...
 
 # using adjustment factor
 yr2004 %>%
@@ -98,7 +99,8 @@ ggplot(cd_uk_lon %>%
 # sex & ethnicity
 main %>%
   filter(sampyear == 2004) %>%
-  plot_cd_rates(chldsex)
+  plot_cd_rates(chldsex) +
+  labs(x = "Sex of child")
 
 plot_cd_rates(main, ethchld)
 
@@ -110,7 +112,8 @@ main %>%
     ethgpc1 %in% c("Pakistani", "Bangladeshi", " Indian") ~ "Asian",
     TRUE ~ ethgpc1
   )) %>%
-  plot_cd_rates(simple_eth)
+  plot_cd_rates(simple_eth) +
+  labs(x = "Ethnicity")
 
 main %>%
   filter(sampyear == 2004) %>%
@@ -119,8 +122,42 @@ main %>%
            str_detect(ethgpc1, "Black") ~ "Black",
            ethgpc1 %in% c("Pakistani", "Bangladeshi", " Indian") ~ "Asian",
            TRUE ~ ethgpc1),
-         bame = if_else(simple_eth == "White", 0, 1)) %>%
-  plot_cd_rates(bame)
+         bame = if_else(simple_eth == "White", "White", "BAME")) %>%
+  plot_cd_rates(bame) +
+  labs(x = "Ethnicity")
+
+# by detailed ethnicity - complicated!
+# first get all the combinations of ethnic group and CD status - this is so we can fill zeros for missing groups
+inner_join(
+  main %>%
+    filter(sampyear == 2004) %>%
+    select(ethgpc1) %>%
+    distinct(),
+  main %>%
+    filter(sampyear == 2004) %>%
+    select(anycd_ic) %>%
+    distinct(),
+  by = character()
+) %>%
+  left_join(main %>%
+              filter(sampyear == 2004) %>%
+              count(ethgpc1, anycd_ic),
+            by = c("ethgpc1", "anycd_ic")) %>%
+  mutate(n = coalesce(n, 0)) %>%
+  group_by(ethgpc1) %>%
+  mutate(prop = prop.table(n),
+         total = sum(n)) %>% # runs as far as this!
+  filter(anycd_ic == "Disorder present") %>%
+  filter(!is.na(ethgpc1)) %>%
+  mutate(lower = prop.test(n, total)$conf.int[1],
+         upper = prop.test(n, total)$conf.int[2]) %>%
+  select(ethgpc1, lower, prop, upper) %>%
+  ggplot(aes(x = ethgpc1, y = prop)) +
+  geom_pointrange(aes(ymin = lower, ymax = upper)) +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0, NA),
+                     name = "Proportion") +
+  labs(title = "Rates of behavioural disorder", x = "Ethnicity")
 
 # age
 table(main$chldage[main$sampyear == 2004])
@@ -135,7 +172,8 @@ main %>%
 
 main %>%
   filter(sampyear == 2004) %>%
-  plot_cd_rates(chld2grp)
+  plot_cd_rates(chld2grp) +
+  labs(x = "Age group")
 
 age.model <- glm(anycd_ic ~ chldage,
                  family = "binomial",
@@ -168,8 +206,11 @@ main %>%
 main %>%
   filter(sampyear == 2004) %>%
   mutate(completed_hhinc = if_else(is.na(hhinc2), "Refused income", as.character(hhinc2)),
-         hh_inc_over_400pw = if_else(hhinc2 %in% c("Over 770", "600.00-770.00", "500.00-599.00", "400.00-499.00"), 1, 0)) %>%
-  plot_cd_rates(hh_inc_over_400pw)
+         hh_inc_over_400pw = if_else(hhinc2 %in% c("Over 770", "600.00-770.00", "500.00-599.00", "400.00-499.00"), "Over £400", "Under £400")) %>%
+  filter(hhinc2 != "Refused income") %>%
+  plot_cd_rates(hh_inc_over_400pw) +
+  labs(x = "Weekly household income") +
+  scale_x_discrete(limits = rev)
 
 # run the first block of naive_model to get yr2004
 yr2004 %>%

@@ -195,3 +195,41 @@ table(yr2004$da1c, useNA = "ifany")
 yr2004$behind_on_spelling <- ifelse(!is.na(yr2004$da1c) & yr2004$da1c %in% c("some difficulty", "marked difficulty"), 1, 0)
 table(yr2004$behind_on_spelling, useNA = "ifany")
 table(yr2004$anycd_ic, yr2004$behind_on_spelling) %>% prop.table(2)
+
+# SEN - needs vars from naive_model
+table(yr2004$anycd_ic, yr2004$tneedsc)
+yr2004 %>%
+  count(sen.comlang, anycd_ic) %>%
+  group_by(sen.comlang) %>%
+  mutate(prop = prop.table(n),
+         total = sum(n)) %>%
+  filter(anycd_ic == "Disorder present")
+
+yr2004 %>%
+  count(sen.menhealth, anycd_ic) %>%
+  group_by(sen.menhealth) %>%
+  mutate(prop = prop.table(n),
+         total = sum(n)) %>%
+  filter(anycd_ic == "Disorder present")
+
+yr2004 %>%
+  count(sen.comlang, sen.menhealth, anycd_ic) %>%
+  group_by(sen.comlang, sen.menhealth) %>%
+  mutate(prop = prop.table(n),
+         total = sum(n)) %>%
+  filter(anycd_ic == "Disorder present") %>%
+  mutate(lower = prop.test(n, total)$conf.int[1],
+         upper = prop.test(n, total)$conf.int[2],
+         sen.comlang = if_else(sen.comlang == 1, "SEN C&L", "No SEN C&L"),
+         sen.menhealth = if_else(sen.menhealth == 1, "SEN B&E", "No SEN B&E")) %>%
+  select(sen.comlang, sen.menhealth, lower, prop, upper) %>%
+  ggplot(aes(x = sen.comlang, y = prop, colour = sen.comlang)) +
+  geom_pointrange(aes(ymin = lower, ymax = upper)) +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0, NA),
+                     name = "Proportion") +
+  labs(title = "Rates of behavioural disorder", colour = NULL, x = NULL) +
+  facet_wrap(~sen.menhealth, strip.position = "bottom") +
+  theme(panel.spacing = unit(0, "lines"),
+        strip.background = element_blank(),
+        strip.placement = "outside")
