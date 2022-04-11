@@ -205,6 +205,16 @@ yr2004 %>%
          total = sum(n)) %>%
   filter(anycd_ic == "Disorder present")
 
+plot_cd_rates(yr2004, sen.comlang) +
+  scale_x_continuous(name = "Special needs: communication & language",
+                     labels = c("No", "", "", "", "Yes"),
+                     breaks = c(0, 0, 0, 0, 1))
+
+plot_cd_rates(yr2004, sen.menhealth) +
+  scale_x_continuous(name = "Special needs: behavioural & emotional",
+                     labels = c("No", "", "", "", "Yes"),
+                     breaks = c(0, 0, 0, 0, 1))
+
 yr2004 %>%
   count(sen.menhealth, anycd_ic) %>%
   group_by(sen.menhealth) %>%

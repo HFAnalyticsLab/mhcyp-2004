@@ -10,7 +10,7 @@ library(ppcor)
 library(broom)
 library(jtools)
 
-main <- read.spss("\\\\thf-rds-fsvm01\\ode_data\\Analytics\\Tom\\MHCYP 2004\\UKDA-5269-spss\\spss\\spss12\\cpm9904.sav",
+main <- read.spss("\\\\thf-rds-fsvm01\\ode_data\\Analytics\\Tom\\mhcyp-2004\\UKDA-5269-spss\\spss\\spss12\\cpm9904.sav",
                   to.data.frame = TRUE)
 
 # filter and make any grouped variables etc. (feature engineering)
