@@ -1,24 +1,11 @@
+# this script is to explore specific behavioural factors, beyond the basic demographics
+
 library(tidyverse)
 library(survey)
 library(foreign)
 
-main <- read.spss("\\\\thf-rds-fsvm01\\ode_data\\Analytics\\Tom\\MHCYP 2004\\UKDA-5269-spss\\spss\\spss12\\cpm9904.sav",
-                  to.data.frame = TRUE)
-
 # weights based on age, sex & region
-prop.table(table(main$anycd_ic[main$sampyear == 2004]))
-
-yr2004 <- main %>%
-  filter(sampyear == 2004) %>%
-  mutate(ethgpc1 = as.character(ethgpc1),
-         hhinc2 = as.character(hhinc2),
-         simple_eth = case_when(
-           str_detect(ethgpc1, "Black") ~ "Black",
-           ethgpc1 %in% c("Pakistani", "Bangladeshi", " Indian") ~ "Asian",
-           is.na(ethgpc1) ~ "Other",
-           TRUE ~ ethgpc1),
-         completed_hhinc = if_else(is.na(hhinc2), "Refused income", hhinc2)
-  )
+prop.table(table(yr2004$anycd_ic))
 
 # main risk factors: https://dub01.online.tableau.com/#/site/gstc-tableau/views/AdolescentMentalHealth_16075088310220/Methodology?:iid=1
 # can't get birth weight, or Early Years Foundation level of development, or educational attainment
@@ -192,7 +179,6 @@ table(yr2004$any_ic, yr2004$contact_with_specialist, useNA = "ifany") %>% prop.t
 
 # spelling
 table(yr2004$da1c, useNA = "ifany")
-yr2004$behind_on_spelling <- ifelse(!is.na(yr2004$da1c) & yr2004$da1c %in% c("some difficulty", "marked difficulty"), 1, 0)
 table(yr2004$behind_on_spelling, useNA = "ifany")
 table(yr2004$anycd_ic, yr2004$behind_on_spelling) %>% prop.table(2)
 
@@ -222,7 +208,7 @@ yr2004 %>%
          upper = prop.test(n, total)$conf.int[2],
          sen.comlang = if_else(sen.comlang == 1, "SEN C&L", "No SEN C&L"),
          sen.menhealth = if_else(sen.menhealth == 1, "SEN B&E", "No SEN B&E")) %>%
-  select(sen.comlang, sen.menhealth, lower, prop, upper) %>%
+  dplyr::select(sen.comlang, sen.menhealth, lower, prop, upper) %>%
   ggplot(aes(x = sen.comlang, y = prop, colour = sen.comlang)) +
   geom_pointrange(aes(ymin = lower, ymax = upper)) +
   scale_y_continuous(labels = scales::percent,

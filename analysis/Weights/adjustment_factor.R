@@ -1,3 +1,7 @@
+# the technical report recommends using an adjustment factor on the final headline results
+# these are just some quick tests to see how this affects our confidence intervals
+# the final bit, where we work the adjustment factor (imperfectly) into the survey weights is included in the main data load script
+
 table(yr2004$teachc, useNA = "ifany")
 table(is.na(yr2004$ta1), useNA = "ifany")
 table(is.na(yr2004$da2), useNA = "ifany")

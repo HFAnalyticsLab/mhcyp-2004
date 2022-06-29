@@ -1,9 +1,10 @@
+# this script was looking at the effects of applying the survey weights and trying to match the headline prevalence quoted in the technical survey
+# the final conclusion was that adjustment factors had to be applied - either directly on the overall rate or by changing the weights
+# adjustment_factor.R shows how you can adjust the weights (and why it's an imperfect solution)
+
 library(tidyverse)
 library(survey)
 library(foreign)
-
-main <- read.spss("\\\\thf-rds-fsvm01\\ode_data\\Analytics\\Tom\\MHCYP 2004\\UKDA-5269-spss\\spss\\spss12\\cpm9904.sav",
-                  to.data.frame = TRUE)
 
 yr2004 <- main %>%
   filter(sampyear == 2004) %>%
