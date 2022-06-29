@@ -2,9 +2,6 @@ library(tidyverse)
 library(survey)
 library(foreign)
 
-main <- read.spss("\\\\thf-rds-fsvm01\\ode_data\\Analytics\\Tom\\MHCYP 2004\\UKDA-5269-spss\\spss\\spss12\\cpm9904.sav",
-                  to.data.frame = TRUE)
-
 # 2 cross sections, no longitudinal component
 main %>%
   group_by(sampyear) %>%

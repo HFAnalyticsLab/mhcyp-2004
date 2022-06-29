@@ -71,8 +71,8 @@ baseline <- glm(anycd_ic ~ chldsex + chldage + simple_eth + completed_hhinc,
 summary(baseline)
 
 simple <- glm(anycd_ic ~ chldsex + chldage + bame + hh_inc_over_400pw,
-                data = train,
-                family = "binomial")
+              data = train,
+              family = "binomial")
 summary(simple)
 tidy(simple)
 glance(simple) %>%
@@ -106,9 +106,9 @@ confusion_matrix(beefed_up, test, 0.1)
 
 # simple beefed-up model
 beefed_up_simple <- glm(anycd_ic ~ chldsex + chldage + bame + hh_inc_over_400pw +
-                   income_benefit + persistent_absence + sen.comlang + sen.menhealth + excluded,
-                 data = train,
-                 family = "binomial")
+                          income_benefit + persistent_absence + sen.comlang + sen.menhealth + excluded,
+                        data = train,
+                        family = "binomial")
 summary(beefed_up_simple)
 
 model_performance(beefed_up_simple, train)
@@ -120,10 +120,10 @@ confusion_matrix(beefed_up_simple, test, 0.1)
 
 # beefed-up 2 - even more features
 beefed_up2 <- glm(anycd_ic ~ chldsex + chldage + simple_eth + completed_hhinc +
-                   income_benefit + persistent_absence + sen.comlang + sen.menhealth + excluded +
-                   lone.parent + at.least.4.children + no.qualifications + hh.unemployment.rate + social.tenants + disability.benefits,
-                 data = train,
-                 family = "binomial")
+                    income_benefit + persistent_absence + sen.comlang + sen.menhealth + excluded +
+                    lone.parent + at.least.4.children + no.qualifications + hh.unemployment.rate + social.tenants + disability.benefits,
+                  data = train,
+                  family = "binomial")
 summary(beefed_up2)
 
 model_performance(beefed_up2, train)
@@ -135,10 +135,10 @@ confusion_matrix(beefed_up2, test, 0.2)
 
 # simple beefed-up model with *some* of the extra features
 beefed_up_simple2 <- glm(anycd_ic ~ chldsex + chldage + bame + hh_inc_over_400pw +
-                          income_benefit + persistent_absence + sen.comlang + sen.menhealth + excluded +
-                          social.tenants + disability.benefits,
-                        data = train,
-                        family = "binomial")
+                           income_benefit + persistent_absence + sen.comlang + sen.menhealth + excluded +
+                           social.tenants + disability.benefits,
+                         data = train,
+                         family = "binomial")
 summary(beefed_up_simple2)
 
 model_performance(beefed_up_simple2, train)
@@ -150,8 +150,8 @@ confusion_matrix(beefed_up_simple2, test, 0.1)
 
 # fully interacted - overfit!
 interacted <- glm(anycd_ic ~ chldsex * chldage * bame * hh_inc_over_400pw, # * income_benefit * persistent_absence * sen.comlang * sen.menhealth * excluded,
-                 data = train,
-                 family = "binomial")
+                  data = train,
+                  family = "binomial")
 summary(interacted)
 
 model_performance(interacted, train)
@@ -164,10 +164,10 @@ confusion_matrix(interacted, test, 0.1)
 # survey weights
 svy2004 <- svydesign(id = ~1, weights = ~weightgr, data = train)
 beefed_up_simple2_survey <- svyglm(anycd_ic ~ chldsex + chldage + bame + hh_inc_over_400pw +
-                                 income_benefit + persistent_absence + sen.comlang + sen.menhealth + excluded +
-                                 social.tenants + disability.benefits,
-                               design = svy2004,
-                               family = "binomial") #, rescale = TRUE)
+                                     income_benefit + persistent_absence + sen.comlang + sen.menhealth + excluded +
+                                     social.tenants + disability.benefits,
+                                   design = svy2004,
+                                   family = "binomial") #, rescale = TRUE)
 summary(beefed_up_simple2_survey)
 # sen.comlang and age less significant, truancy more significant
 

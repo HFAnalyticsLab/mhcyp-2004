@@ -158,22 +158,6 @@ table(yr2004$chldsmokes)
 
 # in contact with mental health services
 table(yr2004$anycd_ic, yr2004$whhelp01, useNA = "ifany") %>% prop.table(2) # these go up to whhelp12 to cover all possible bases
-yr2004 <- yr2004 %>%
-  mutate(contact_with_specialist = case_when(
-    whhelp01 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    whhelp02 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    whhelp03 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    whhelp04 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    whhelp05 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    whhelp06 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    whhelp07 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    whhelp08 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    whhelp09 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    whhelp10 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    whhelp11 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    whhelp12 %in% c("Social worker", "Someone working in special educational s", "Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
-    TRUE ~ 0)
-  )
 table(yr2004$anycd_ic, yr2004$contact_with_specialist, useNA = "ifany") %>% prop.table(2)
 table(yr2004$any_ic, yr2004$contact_with_specialist, useNA = "ifany") %>% prop.table(2)
 
@@ -190,6 +174,16 @@ yr2004 %>%
   mutate(prop = prop.table(n),
          total = sum(n)) %>%
   filter(anycd_ic == "Disorder present")
+
+plot_cd_rates(yr2004, sen.comlang) +
+  scale_x_continuous(name = "Special needs: communication & language",
+                     labels = c("No", "", "", "", "Yes"),
+                     breaks = c(0, 0, 0, 0, 1))
+
+plot_cd_rates(yr2004, sen.menhealth) +
+  scale_x_continuous(name = "Special needs: behavioural & emotional",
+                     labels = c("No", "", "", "", "Yes"),
+                     breaks = c(0, 0, 0, 0, 1))
 
 yr2004 %>%
   count(sen.menhealth, anycd_ic) %>%
