@@ -10,10 +10,11 @@ load.R is the first script to run, and assumes you've downloaded the SPSS file i
 This contains a data dictionary for the dataset, and the script used to pull this out from the SPSS file.
 
 ## Exploratory data analysis
-There are 3 scripts in the EDA folder:
+There are 4 scripts in the EDA folder:
   - by_region.R compares prevalence across different areas of Great Britain
   - demographic_covariates.R compares prevalence across major demographic groups like age, sex, ethnicity and income
   - other_predictors.R
+  - healthcare_usage.R looks at the % in contact with various health services
   
 ## Modelling
 There are 2 scripts in the Modelling folder:
