@@ -86,6 +86,40 @@ yr2004$behind_on_spelling <- ifelse(!is.na(yr2004$da1c) & yr2004$da1c %in% c("so
 # some problematic feature engineering here - bit of lumping unknown ethnicity to other
 # worse is how we deal with grouped income and lots of missing values
 
+# 4th round!
+yr2004 <- yr2004 %>%
+  mutate(contact_with_primary_care = case_when(
+    whhelp01 == "Your GP, family doctor or practice nurse" ~ 1,
+    whhelp02 == "Your GP, family doctor or practice nurse" ~ 1,
+    whhelp03 == "Your GP, family doctor or practice nurse" ~ 1,
+    whhelp04 == "Your GP, family doctor or practice nurse" ~ 1,
+    whhelp05 == "Your GP, family doctor or practice nurse" ~ 1,
+    whhelp06 == "Your GP, family doctor or practice nurse" ~ 1,
+    whhelp07 == "Your GP, family doctor or practice nurse" ~ 1,
+    whhelp08 == "Your GP, family doctor or practice nurse" ~ 1,
+    whhelp09 == "Your GP, family doctor or practice nurse" ~ 1,
+    whhelp10 == "Your GP, family doctor or practice nurse" ~ 1,
+    whhelp11 == "Your GP, family doctor or practice nurse" ~ 1,
+    whhelp12 == "Your GP, family doctor or practice nurse" ~ 1,
+    TRUE ~ 0)
+  )
+
+yr2004 <- yr2004 %>%
+  mutate(contact_with_mhs = case_when(
+    whhelp01 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    whhelp02 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    whhelp03 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    whhelp04 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    whhelp05 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    whhelp06 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    whhelp07 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    whhelp08 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    whhelp09 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    whhelp10 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    whhelp11 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    whhelp12 %in% c("Someone specialising in child mental hea", "Someone specialising in adult mental hea") ~ 1,
+    TRUE ~ 0)
+  )
 
 # how to adjust survey weights to incorporate adjustment factor
 # to adjust unweighted estimates, just replace weightsc with 1 throughout

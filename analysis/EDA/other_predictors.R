@@ -2,7 +2,6 @@
 
 library(tidyverse)
 library(survey)
-library(foreign)
 
 # weights based on age, sex & region
 prop.table(table(yr2004$anycd_ic))
