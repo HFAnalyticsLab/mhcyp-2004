@@ -15,3 +15,6 @@ table(main$tconsid, main$sampyear, useNA = "ifany") # Considerate of other peopl
 #   - Young person SDQ - cb4 onwards
 #   - Teacher SDQ - tconsid onwards
 #   - What data from parents was used in 1999? Most of ^these fields^ missing
+table(main$d15, main$sampyear, useNA = "ifany") # D15 is child fights or bullies in the SDQ
+
+
