@@ -43,16 +43,52 @@ venn.plot <- draw.quad.venn(
     filter(anycd_ic == "Disorder present") %>%
     filter(emot_ic == "Disorder present") %>%
     nrow(),
-  n13 = 27,
-  n14 = 32,
-  n23 = 38,
-  n24 = 32,
-  n34 = 20,
-  n123 = 18,
-  n124 = 17,
-  n134 = 11,
-  n234 = 13,
-  n1234 = 6,
+  n13 = comorbidities_table %>%
+    filter(anycd_ic == "Disorder present") %>%
+    filter(other_ic == "Disorder present") %>%
+    nrow(),
+  n14 = comorbidities_table %>%
+    filter(anycd_ic == "Disorder present") %>%
+    filter(hyper_ic == "Disorder present") %>%
+    nrow(),
+  n23 = comorbidities_table %>%
+    filter(emot_ic == "Disorder present") %>%
+    filter(other_ic == "Disorder present") %>%
+    nrow(),
+  n24 = comorbidities_table %>%
+    filter(emot_ic == "Disorder present") %>%
+    filter(hyper_ic == "Disorder present") %>%
+    nrow(),
+  n34 = comorbidities_table %>%
+    filter(other_ic == "Disorder present") %>%
+    filter(hyper_ic == "Disorder present") %>%
+    nrow(),
+  n123 = comorbidities_table %>%
+    filter(anycd_ic == "Disorder present") %>%
+    filter(emot_ic == "Disorder present") %>%
+    filter(other_ic == "Disorder present") %>%
+    nrow(),
+  n124 = comorbidities_table %>%
+    filter(anycd_ic == "Disorder present") %>%
+    filter(emot_ic == "Disorder present") %>%
+    filter(hyper_ic == "Disorder present") %>%
+    nrow(),
+  n134 = comorbidities_table %>%
+    filter(anycd_ic == "Disorder present") %>%
+    filter(other_ic == "Disorder present") %>%
+    filter(hyper_ic == "Disorder present") %>%
+    nrow(),
+  n234 = comorbidities_table %>%
+    filter(emot_ic == "Disorder present") %>%
+    filter(other_ic == "Disorder present") %>%
+    filter(hyper_ic == "Disorder present") %>%
+    nrow(),
+  n1234 = comorbidities_table %>%
+    filter(anycd_ic == "Disorder present") %>%
+    filter(emot_ic == "Disorder present") %>%
+    filter(other_ic == "Disorder present") %>%
+    filter(hyper_ic == "Disorder present") %>%
+    nrow(),
   category = c("Behavioural \ndisorders", "Depression \nand Anxiety", "Other", "ADHD"),
   print.mode=c("raw","percent") , 
   fill = c("#0073C2FF", "#EFC000FF", "#868686FF", "#CD534CFF"),
@@ -65,6 +101,10 @@ venn.plot <- draw.quad.venn(
   lwd = rep(1, 4)
 )
 
+png(file="Comorbidities Venn Diagram.png",
+    width=800, height=600)
+grid.draw(venn.plot)
+dev.off()
 
 # CORRELATION PLOTS
 
@@ -151,12 +191,37 @@ comorbidities_table %>%
 
 
 
+# PIE CHART to show how many children have disorders
+
+library(ggplot2)
 
 
+bp <- ggplot(yr2004, aes(x = "", y=stat(count), fill=any_ic)) +
+  labs(fill="At least one Psych Diagnosis?") +
+  geom_bar() 
+bp
+
+pie <- bp + coord_polar("y", start=0)
+pie
 
 
+blank_theme <- theme_minimal()+
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.border = element_blank(),
+    panel.grid=element_blank(),
+    axis.ticks = element_blank(),
+    plot.title=element_text(size=14, face="bold")
+  )
+
+library(ggrepel)
 
 
+pie + blank_theme +
+  theme(axis.text.x=element_blank())
+  
+pie
 
 
 
