@@ -115,30 +115,44 @@ anydisorder_table <- yr2004 %>%
 
 BD_plot <- ggplot(data = anydisorder_table, aes(x = any_ic, fill=anycd_ic)) +
   geom_bar() +
-  labs(title = "Children with Behavioural Disorder diagnoses", x = "", y = "Count", fill="Diagnoses?") 
+  geom_text(stat = "count", aes(label = ..count..), position = position_stack(vjust = 0.5), 
+            color="white", size=5) +
+  labs(title = "Children with Behavioural Disorder \ndiagnoses", x = "", y = "Count", fill="Diagnoses?") +
+  rremove("x.text")
 BD_plot
 
 DA_plot <- ggplot(data = anydisorder_table, aes(x = any_ic, fill=emot_ic)) +
   geom_bar() +
-  labs(title = "Children with Depression & Anxiety diagnoses", x = "", y = "Count", fill="Diagnoses?") 
+  geom_text(stat = "count", aes(label = ..count..), position = position_stack(vjust = 0.5), 
+            color="white", size=5) +
+  labs(title = "Children with Depression & Anxiety diagnoses", x = "", y = "Count", fill="Diagnoses?") +
+  rremove("x.text")
 DA_plot
 
 other_plot <- ggplot(data = anydisorder_table, aes(x = any_ic, fill=other_ic)) +
   geom_bar() +
-  labs(title = "Children with Other Psych diagnoses", x = "", y = "Count", fill="Diagnoses?") 
+  geom_text(stat = "count", aes(label = ..count..), position = position_stack(vjust = 0.5), 
+            color="white", size=5) +
+  labs(title = "Children with Other Psych diagnoses", x = "", y = "Count", fill="Diagnoses?")+
+  rremove("x.text")
 other_plot
 
 ADHD_plot <- ggplot(data = anydisorder_table, aes(x = any_ic, fill=hyper_ic)) +
   geom_bar() +
-  labs(title = "Children with ADHD  diagnoses", x = "", y = "Count", fill="Diagnoses?") 
+  geom_text(stat = "count", aes(label = ..count..), position = position_stack(vjust = 0.5), 
+            color="white", size=5) +
+  labs(title = "Children with ADHD  diagnoses", x = "", y = "Count", fill="Diagnoses?") +
+  rremove("x.text")
 ADHD_plot
 
 install.packages("ggpubr")
 library(ggpubr)
+library("cowplot")
 
-figure1 <- ggarrange(BD_plot, DA_plot, ADHD_plot, other_plot, 
-          labels = c("A", "B", "C", "D"),
-          ncol = 2, nrow = 2)
+
+figure1 <- plot_grid(BD_plot, DA_plot, ADHD_plot , other_plot,
+          ncol = 2) +
+  
 figure1
 
 
@@ -193,18 +207,10 @@ comorbidities_table %>%
 
 # PIE CHART to show how many children have disorders
 
-library(ggplot2)
+library(ggrepel)
 
 
-bp <- ggplot(yr2004, aes(x = "", y=stat(count), fill=any_ic)) +
-  labs(fill="At least one Psych Diagnosis?") +
-  geom_bar() 
-bp
-
-pie <- bp + coord_polar("y", start=0)
-pie
-
-
+#a colour theme to make background of pie chart disappear
 blank_theme <- theme_minimal()+
   theme(
     axis.title.x = element_blank(),
@@ -215,13 +221,23 @@ blank_theme <- theme_minimal()+
     plot.title=element_text(size=14, face="bold")
   )
 
-library(ggrepel)
-
-
-pie + blank_theme +
-  theme(axis.text.x=element_blank())
-  
+#the chart
+pie <- ggplot(yr2004, aes(x = "", y=stat(count), fill=any_ic)) +
+  labs(fill="At least one Psych Diagnosis?", ) +
+  geom_bar() +
+  geom_text(stat = "count", aes(label = ..count..), position = position_stack(vjust = 0.5), 
+            color="white", size=5) +
+  coord_polar("y", start=0) +
+  blank_theme +
+  theme(axis.text.x=element_blank()) 
 pie
+
+
+
+
+
+
+
 
 
 
