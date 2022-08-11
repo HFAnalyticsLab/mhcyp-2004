@@ -171,37 +171,60 @@ hyper_ic_2 <- as.integer(comorbidities_table$hyper_ic) - 1
 
 clustering_table <- data.frame(anycd_ic_2, emot_ic_2, other_ic_2, hyper_ic_2)
 rownames(clustering_table) <- studyno_2
+rm(studyno_2, anycd_ic_2, emot_ic_2, other_ic_2, hyper_ic_2)
 view(clustering_table)
 
 # practice clustering plots
+library(dendextend)
 
-install.packages("ggdendro")
-install.packages("cluster")
-library(ggplot2)
-library(ggdendro)
-library(cluster)
+# visualise the distance matrix
+head(clustering_table) %>%
+  dist(method = "manhattan")
 
-# hierarchical clustering using euclidian distance 
-hc1 <- hclust(dist(clustering_table), "ave")  # hierarchical clustering
-ggdendrogram(hc1, rotate = TRUE, size = 2, labels = FALSE)
 
-# heirarchical clustering using gower metric 
+# hierarchical clustering using manhattan distance
+distance_matrix1 <- dist(clustering_table, method = "manhattan")
+distance_matrix3 <- dist(clustering_table, method = "binary")
 
-d_dist<-daisy(clustering_table, metric = "gower")
-hc2<-hclust(d_dist, method = "complete")
-plot(hc2, labels=FALSE)
-rect.hclust(hc, k=8, border="red")
+# what's the maximum distance?
+distance_matrix %>%
+  as.matrix() %>%
+  max()
 
-clustering_table %>%
-  mutate_all(as.character) %>%
-  transmute(all = paste0(anycd_ic_2, emot_ic_2, hyper_ic_2, other_ic_2)) %>% 
-  distinct() %>%
-  arrange(all)
+hc1 <- hclust(distance_matrix1, method = "complete")  # complete linkage
+hc2 <- hclust(distance_matrix1, method = "average")  # average linkage
+hc3 <- hclust(distance_matrix3, method = "complete")  # complete linkage
+hc4 <- hclust(distance_matrix3, method = "average")  # average linkage
+
+# removing labels
+noLabel <- function(x) {
+  if (stats::is.leaf(x)) {
+    attr(x, "label") <- NULL }
+  return(x)
+}
+
+# now let's plot and inspect the clusters
+colored_dendrogram1 <- color_branches(as.dendrogram(hc1), k = 3)
+colored_dendrogram2 <- color_branches(as.dendrogram(hc2), k = 3)
+colored_dendrogram3 <- color_branches(as.dendrogram(hc3), k = 3)
+colored_dendrogram4 <- color_branches(as.dendrogram(hc4), k = 3)
+
+plot(stats::dendrapply(colored_dendrogram1, noLabel))
+plot(stats::dendrapply(colored_dendrogram2, noLabel))
+plot(stats::dendrapply(colored_dendrogram3, noLabel))
+plot(stats::dendrapply(colored_dendrogram4, noLabel),
+     main = "Clustering on mental disorders", sub = "Hierarchical cluster, 3 high-level clusters highlighted")
+legend("topright", legend = c(1, 2, 3), fill = c("blue", "green", "red"))
+
+cluster1 <- cutree(hc1, k = 3)
+cluster2 <- cutree(hc2, k = 3)
+cluster3 <- cutree(hc3, k = 3)
+cluster4 <- cutree(hc4, k = 3)
 
 comorbidities_table %>%
-  select(-studyno) %>%
-  distinct()
-
+  mutate(cluster = cluster4) %>%
+  count(select(., -studyno)) %>%
+  arrange(cluster, desc(n))
 
 
 
