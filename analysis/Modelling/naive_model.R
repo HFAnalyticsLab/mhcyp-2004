@@ -70,7 +70,7 @@ baseline <- glm(anycd_ic ~ chldsex + chldage + simple_eth + completed_hhinc,
                 family = "binomial")
 summary(baseline)
 
-simple <- glm(anycd_ic ~ chldsex + chldage + bame + hh_inc_over_400pw,
+simple <- glm(anycd_ic ~ chldsex + over_11 + bame + hh_inc_over_400pw,
               data = train,
               family = "binomial")
 summary(simple)
