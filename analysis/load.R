@@ -13,6 +13,7 @@ yr2004 <- main %>%
   mutate(conduct.disorder = if_else(anycd_ic == "Disorder present", 1, 0),
          male = if_else(chldsex == "Male", 1, 0),
          age_over_10 = chldage - 10,
+         over_11 = if_else(chldage > 10 , 1, 0),
          ethgpc1 = as.character(ethgpc1),
          hhinc2 = as.character(hhinc2),
          simple_eth = case_when(
