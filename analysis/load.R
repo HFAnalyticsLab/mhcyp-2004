@@ -11,6 +11,33 @@ main <- read.spss("cpm9904.sav", to.data.frame = TRUE)
 yr2004 <- main %>%
   filter(sampyear == 2004) %>%
   mutate(conduct.disorder = if_else(anycd_ic == "Disorder present", 1, 0),
+            weekly_hhldinc = case_when(
+             hhldinc == "Less than 1000" ~ 500/52,
+             hhldinc == "2,000 to 2,999" ~ 2499.5/52,
+             hhldinc == "3,000 to 3,999" ~ 3499.5/52,
+             hhldinc == "4,000 to 4,999" ~ 4499.5/52,
+             hhldinc == "5,000 to 5,999" ~ 5499.5/52,
+             hhldinc == "6,000 to 6,999" ~ 6499.5/52,
+             hhldinc == "7,000 to 7,999" ~ 7499.5/52,
+             hhldinc == "8,000 to 8,999" ~ 8499.5/52,
+             hhldinc == "9,000 to 9,999" ~ 9499.5/52,
+             hhldinc == "10,000 to 10,999" ~ 10499.5/52, 
+             hhldinc == "11,000 to 11,999"~ 11499.5/52,
+             hhldinc == "12,000 to 12,999"~ 12499.5/52,
+             hhldinc == "13,000 to 13,999"~ 13499.5/52,
+             hhldinc == "14,000 to 14,999"~ 14499.5/52,
+             hhldinc == "15,000 to 17,499"~ 16249.5/52,
+             hhldinc == "17,500 to 19,999"~ 18749.5/52,
+             hhldinc == "20,000 to 24,999"~ 22499.5/52,
+             hhldinc == "25,000 to 29,999"~ 27499.5/52,
+             hhldinc == "30,000 to 39,999"~ 34999.5/52,
+             hhldinc == "40,000 or more"~ 40000/52),
+         group_A = numadult ,
+         group_B = numchild ,
+         group_A1 = if_else(chldage >= 14, group_A + 1 , group_A) ,
+         group_B1 = if_else(chldage >= 14, group_B - 1, group_B) ,
+         under_14s = group_B1*7/8,
+         over_14s = group_A1 + group_B1/8,
          male = if_else(chldsex == "Male", 1, 0),
          age_over_10 = chldage - 10,
          over_11 = if_else(chldage > 10 , 1, 0),
@@ -23,8 +50,10 @@ yr2004 <- main %>%
            TRUE ~ ethgpc1),
          bame = if_else(simple_eth == "White", 0, 1),
          completed_hhinc = if_else(is.na(hhinc2), "Refused income", hhinc2),
-         hh_inc_over_400pw = if_else(hhinc2 %in% c("Over 770", "600.00-770.00", "500.00-599.00", "400.00-499.00"), 1, 0)
-  )
+         hh_inc_over_400pw = if_else(hhinc2 %in% c("Over 770", "600.00-770.00", "500.00-599.00", "400.00-499.00"), 1, 0),
+         equivalised_income = weekly_hhldinc / (under_14s*0.2 + ((over_14s+1)*0.33))) %>%
+         select(-c(group_A,group_A1, group_B, group_B1)) 
+
 
 # add extra features
 yr2004$persistent_absence <- 0
@@ -37,6 +66,11 @@ yr2004$income_benefit[which(yr2004$ben2q1 %in% c("Income Support ^MIG_Txt", "Job
 yr2004$sen.comlang <- ifelse(is.na(yr2004$tneedsc), 1, yr2004$tneedsc) - 1
 yr2004$sen.menhealth <- ifelse(is.na(yr2004$tneedsb), 1, yr2004$tneedsb) - 1
 yr2004$excluded <- abs(ifelse(is.na(yr2004$excever), 1, yr2004$excever) - 2)
+
+# adding income_deprived flag
+
+yr2004 <- yr2004 %>% 
+  mutate(income_deprived = if_else( income_benefit == 1 | equivalised_income <218 , 1, 0) )
 
 # extra features - 2nd round
 yr2004$lone.parent <- ifelse(is.na(yr2004$lonepar), 0, 1)
