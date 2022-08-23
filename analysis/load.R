@@ -61,8 +61,8 @@ yr2004$persistent_absence[which(yr2004$absence == "16 days and over")] <- 1
 yr2004$income_benefit <- 0
 yr2004$income_benefit[which(yr2004$ben2q1 %in% c("Income Support ^MIG_Txt", "Job Seekers  Allowance(JSA)", "^PC_Txt") | # I *think* these are the 3 income benefits
                               yr2004$ben2q2 %in% c("Income Support ^MIG_Txt", "Job Seekers  Allowance(JSA)", "^PC_Txt") |
-                              yr2004$txcred1 %in% c("Working Tax Credit (excluding any childc", "Child Tax Credit (including any childcar") |
-                              yr2004$txcred2 %in% c("Working Tax Credit (excluding any childc", "Child Tax Credit (including any childcar"))] <- 1
+                              yr2004$txcred1 %in% c("Working Tax Credit (excluding any childc")|
+                              yr2004$txcred2 %in% c("Working Tax Credit (excluding any childc") )] <- 1
 yr2004$sen.comlang <- ifelse(is.na(yr2004$tneedsc), 1, yr2004$tneedsc) - 1
 yr2004$sen.menhealth <- ifelse(is.na(yr2004$tneedsb), 1, yr2004$tneedsb) - 1
 yr2004$excluded <- abs(ifelse(is.na(yr2004$excever), 1, yr2004$excever) - 2)
@@ -70,7 +70,8 @@ yr2004$excluded <- abs(ifelse(is.na(yr2004$excever), 1, yr2004$excever) - 2)
 # adding income_deprived flag
 
 yr2004 <- yr2004 %>% 
-  mutate(income_deprived = if_else( income_benefit == 1 | equivalised_income <218 , 1, 0) )
+  mutate(income_deprived = if_else( income_benefit == 1 | equivalised_income <218 , 1, 0),
+         income_deprived = coalesce(income_deprived, 1))
 
 # extra features - 2nd round
 yr2004$lone.parent <- ifelse(is.na(yr2004$lonepar), 0, 1)
