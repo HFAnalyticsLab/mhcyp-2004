@@ -100,6 +100,71 @@ ggplot() +
   theme_void() +
   coord_map()
 
+# Generating a map for count predictions
+
+# first adding a column onto the yr2011 dataframe
+
+yr2011 <- yr2011 %>%
+  mutate(count_predictions = age_5_16*simple_model_predictions)
+view(yr2011)
+
+
+LS_count_map <- readOGR(
+  dsn = "~/git/mhcyp-2004/analysis/Modelling/MSOA Shapefile"
+)
+
+summary(LS_count_map)
+length(LS_count_map)
+head(LS_count_map@data)
+
+plot(LS_count_map)
+
+# merging the shapefile with the yr2011 data by the msoa column
+
+install.packages("gpclib")
+library(gpclib)
+
+maptools::gpclibPermit()
+tidy_LS_count_map <- tidy(LS_count_map, region = "msoa11nm") %>%
+  inner_join(yr2011, by = c("id" = "msoa"))
+
+view(tidy_LS_count_map)
+
+# adding the count predictions column to the csv file for yr2011
+write.csv(yr2011, file = "yr2011_table.csv")
+
+
+library(mapproj)
+
+# blank map
+ggplot() +
+  geom_polygon(data = tidy_LS_count_map, aes(x = long, y = lat, group = group), fill = "#0c0d0d", colour = "white") +
+  theme_void() +
+  coord_map() # needs mapproj installed
+
+# map of simple_model_predictions
+ggplot() +
+  geom_polygon(data = tidy_LS_count_map, aes(x = long, y = lat, group = group, fill = count_predictions), colour = NA) +
+  scale_fill_distiller(palette = "Blues", direction = 1) +
+  labs(fill = "Simple Model Count Predictions", 
+       title="Map of Behavioural Disorders across \nLambeth & Southwark") +
+  theme(legend.title = element_text(size = 8),
+        plot.title=element_text(hjust=0.5)) +
+  theme_void() +
+  coord_map()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
