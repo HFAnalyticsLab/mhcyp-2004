@@ -23,3 +23,10 @@ There are 2 scripts in the Modelling folder:
  
 ## Weights
 These are 2 scripts exploring the use of survey weights and the adjustment factor recommended by the survey authors.
+
+## cluster
+There are 2 scripts containing the analysis and plots for comorbidities:
+  - comorbidities_plots.R is the main script and contains a Venn diagram, bar plots, a pie chart and the clustering             plots 
+
+
+
