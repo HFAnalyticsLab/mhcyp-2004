@@ -12,6 +12,7 @@ prop.table(table(yr2004$anycd_ic))
 
 # expulsion - excever == "Yes"
 table(yr2004$anycd_ic, yr2004$excever) %>% prop.table(margin = 2)
+table(yr2004$anycd_ic, yr2004$excever) %>% prop.table()
 
 # truancy - absence / absence1 for Yes/No
 table(yr2004$anycd_ic, yr2004$absence1) %>% prop.table(margin = 2)
@@ -44,6 +45,12 @@ table(yr2004$anycd_ic, ifelse(is.na(yr2004$tneedsb), 1, yr2004$tneedsb)) %>%
   prop.table(margin = 2)
 yr2004$sen.menhealth <- ifelse(is.na(yr2004$tneedsb), 1, yr2004$tneedsb) - 1
 table(yr2004$anycd_ic, yr2004$tneedsb) %>% prop.table(margin = 2)
+
+# any special educational needs
+table(yr2004$anycd_ic, yr2004$tneeds) %>% prop.table()
+
+# SEN & school exclusions
+table(yr2004$excever, yr2004$tneeds) %>% prop.table()
 
 # could also try urban / rural classification - metropolitan counties
 table(yr2004$gorgrp)
