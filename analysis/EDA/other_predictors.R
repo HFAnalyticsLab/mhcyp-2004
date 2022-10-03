@@ -219,3 +219,82 @@ yr2004 %>%
   theme(panel.spacing = unit(0, "lines"),
         strip.background = element_blank(),
         strip.placement = "outside")
+
+# "white children get diagnoses, black children get excluded" - is there evidence for this statement?
+table(yr2004$anycd_ic, yr2004$excever) %>% prop.table()
+
+# how do exclusion rates compare overall?
+yr2004 %>%
+  count(simple_eth, excluded) %>%
+  group_by(simple_eth) %>%
+  mutate(prop = prop.table(n),
+         total = sum(n)) %>%
+  filter(excluded == 1) %>%
+  mutate(lower = binom.test(n, total)$conf.int[1],
+         upper = binom.test(n, total)$conf.int[2]) %>%
+  print(n = Inf) %>%
+  ggplot(aes(x = simple_eth, y = prop, fill = simple_eth)) +
+  geom_col(position = position_dodge()) +
+  geom_errorbar(aes(ymin = lower, ymax = upper, width = 0.3)) +
+  labs(main = "Exclusion rate by ethnic group",
+       x = "Ethnic group", fill = "Ethnic group") +
+  scale_y_continuous(labels = scales::percent)
+
+# can we shade these bars by the % of excluded children with and without BD?
+yr2004 %>%
+  count(simple_eth, excluded, conduct.disorder) %>%
+  group_by(simple_eth) %>%
+  mutate(prop = prop.table(n),
+         total = sum(n)) %>%
+  filter(excluded == 1) %>%
+  print(n = Inf) %>%
+  ggplot(aes(x = simple_eth, y = prop, fill = as.factor(conduct.disorder))) +
+  geom_col() +
+  labs(main = "Exclusion rate by ethnic group",
+       x = "Ethnic group", fill = "Behavioural disorder?") +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 0.1))
+
+# are children who are excluded more likely to have a BD, for each ethnic group?
+yr2004 %>%
+  count(simple_eth, excluded, conduct.disorder) %>%
+  group_by(simple_eth, excluded) %>%
+  mutate(prop = prop.table(n),
+         total = sum(n)) %>%
+  filter(excluded == 1) %>%
+  rowwise() %>%
+  mutate(lower = binom.test(n, total)$conf.int[1],
+         upper = binom.test(n, total)$conf.int[2]) %>%
+  filter(conduct.disorder == 1) %>%
+  ggplot(aes(x = simple_eth, y = prop, fill = simple_eth)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = lower, ymax = upper, width = 0.3)) +
+  labs(title = "Proportion of excluded children with a BD",
+       x = "Ethnic group", fill = "Ethnic group") +
+  scale_y_continuous(labels = scales::percent)
+
+# are children with BD more likely to be excluded, for each ethnic group?
+yr2004 %>%
+  count(simple_eth, conduct.disorder, excluded) %>%
+  group_by(simple_eth, conduct.disorder) %>%
+  mutate(prop = prop.table(n),
+         total = sum(n)) %>%
+  filter(excluded == 1) %>%
+  mutate(lower = binom.test(n, total)$conf.int[1],
+         upper = binom.test(n, total)$conf.int[2]) %>%
+  print(n = Inf) %>%
+  ggplot(aes(x = as.factor(conduct.disorder), y = prop, fill = simple_eth)) +
+  geom_col(position = position_dodge()) +
+  geom_errorbar(aes(ymin = lower, ymax = upper, width = 0.3)) +
+  facet_wrap(~ simple_eth) +
+  labs(title = "Exclusion rate", x = "Behavioural disorder?", fill = "Ethnic group") +
+  scale_y_continuous(labels = scales::percent)
+
+exclusion_model1 <- glm(excluded ~ conduct.disorder + simple_eth + male + chldage,
+    data = yr2004,
+    family = "binomial")
+summary(exclusion_model1)
+
+exclusion_model2 <- glm(excluded ~ conduct.disorder * simple_eth + male + chldage,
+                        data = yr2004,
+                        family = "binomial")
+summary(exclusion_model2)
