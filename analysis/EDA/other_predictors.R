@@ -236,8 +236,8 @@ yr2004 %>%
   ggplot(aes(x = simple_eth, y = prop, fill = simple_eth)) +
   geom_col(position = position_dodge()) +
   geom_errorbar(aes(ymin = lower, ymax = upper, width = 0.3)) +
-  labs(main = "Exclusion rate by ethnic group",
-       x = "Ethnic group", fill = "Ethnic group") +
+  labs(title = "Exclusion rate by ethnic group",
+       x = "Ethnic group", y = "", fill = "Ethnic group") +
   scale_y_continuous(labels = scales::percent)
 
 # can we shade these bars by the % of excluded children with and without BD?
@@ -269,7 +269,7 @@ yr2004 %>%
   geom_col() +
   geom_errorbar(aes(ymin = lower, ymax = upper, width = 0.3)) +
   labs(title = "Proportion of excluded children with a BD",
-       x = "Ethnic group", fill = "Ethnic group") +
+       x = "Ethnic group", y = "", fill = "Ethnic group") +
   scale_y_continuous(labels = scales::percent)
 
 # are children with BD more likely to be excluded, for each ethnic group?
@@ -286,7 +286,7 @@ yr2004 %>%
   geom_col(position = position_dodge()) +
   geom_errorbar(aes(ymin = lower, ymax = upper, width = 0.3)) +
   facet_wrap(~ simple_eth) +
-  labs(title = "Exclusion rate", x = "Behavioural disorder?", fill = "Ethnic group") +
+  labs(title = "Exclusion rate", x = "Behavioural disorder?", y = "", fill = "Ethnic group") +
   scale_y_continuous(labels = scales::percent)
 
 exclusion_model1 <- glm(excluded ~ conduct.disorder + simple_eth + male + chldage,
