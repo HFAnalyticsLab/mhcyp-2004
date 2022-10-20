@@ -289,12 +289,20 @@ yr2004 %>%
   labs(title = "Exclusion rate", x = "Behavioural disorder?", y = "", fill = "Ethnic group") +
   scale_y_continuous(labels = scales::percent)
 
-exclusion_model1 <- glm(excluded ~ conduct.disorder + simple_eth + male + chldage,
+
+exclusion_model0 <- glm(excluded ~ conduct.disorder + simple_eth + male + chldage,
+                        data = yr2004,
+                        family = "binomial")
+summary(exclusion_model0)
+
+exclusion_model1 <- glm(excluded ~ conduct.disorder + simple_eth + male + chldage + income_deprived,
     data = yr2004,
     family = "binomial")
 summary(exclusion_model1)
 
-exclusion_model2 <- glm(excluded ~ conduct.disorder * simple_eth + male + chldage,
+exclusion_model2 <- glm(excluded ~ conduct.disorder * simple_eth + male + chldage + income_deprived,
                         data = yr2004,
                         family = "binomial")
 summary(exclusion_model2)
+
+stargazer::stargazer(exclusion_model0, exclusion_model1, exclusion_model2, type = "text")

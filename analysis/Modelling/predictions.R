@@ -105,7 +105,7 @@ ggplot() +
 ggplot() +
   geom_polygon(data = tidy_LS_count_map, aes(x = long, y = lat, group = group, fill = count_predictions), colour = NA) +
   scale_fill_distiller(palette = "Blues", direction = 1) +
-  labs(fill = "Simple Model Count Predictions", 
+  labs(fill = "Count Predictions", 
        title="Map of Behavioural Disorders across \nLambeth & Southwark") +
   theme(legend.title = element_text(size = 8),
         plot.title=element_text(hjust=0.5)) +
