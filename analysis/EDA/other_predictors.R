@@ -240,6 +240,27 @@ yr2004 %>%
        x = "Ethnic group", y = "", fill = "Ethnic group") +
   scale_y_continuous(labels = scales::percent)
 
+# break this out by income deprivation
+yr2004 %>%
+  mutate(income_deprived = if_else(income_deprived == 1, "Low income", "High income")) %>%
+  count(simple_eth, income_deprived, excluded) %>%
+  group_by(simple_eth, income_deprived) %>%
+  mutate(prop = prop.table(n),
+         total = sum(n)) %>%
+  filter(excluded == 1) %>%
+  rowwise() %>%
+  mutate(lower = binom.test(n, total)$conf.int[1],
+         upper = binom.test(n, total)$conf.int[2]) %>%
+  print(n = Inf) %>%
+  ggplot(aes(x = simple_eth, y = prop, fill = simple_eth)) +
+  geom_col(position = position_dodge()) +
+  geom_errorbar(aes(ymin = lower, ymax = upper, width = 0.3)) +
+  labs(title = "Exclusion rate by ethnic group",
+       x = "Ethnic group", y = "", fill = "Ethnic group") +
+  scale_y_continuous(labels = scales::percent) +
+  facet_wrap(~income_deprived)
+
+
 # can we shade these bars by the % of excluded children with and without BD?
 yr2004 %>%
   count(simple_eth, excluded, conduct.disorder) %>%
