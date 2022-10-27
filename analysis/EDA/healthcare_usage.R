@@ -7,6 +7,16 @@ library(survey)
 table(yr2004$any_ic, yr2004$contact_with_primary_care) %>% prop.table(margin = 1)
 table(yr2004$anycd_ic, yr2004$contact_with_primary_care) %>% prop.table(margin = 1)
 
+# add confidence intervals on % of BD who use primary care
+yr2004 %>%
+  filter(conduct.disorder == 1) %>%
+  count(contact_with_primary_care) %>%
+  mutate(total = sum(n)) %>%
+  filter(contact_with_primary_care == 1) %>%
+  mutate(prop = n / total,
+         lower = prop.test(n, total)$conf.int[1],
+         upper = prop.test(n, total)$conf.int[2])
+
 # so what % have a BD *and* see the GP about it?
 table(yr2004$anycd_ic, yr2004$contact_with_primary_care) %>% prop.table()
 
