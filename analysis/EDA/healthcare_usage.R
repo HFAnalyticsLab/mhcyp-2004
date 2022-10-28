@@ -33,7 +33,24 @@ yr2004 %>%
   select(-anycd_ic, -contact_with_primary_care) %>%
   mutate(lower = prop.test(n, subsample)$conf.int[1],
          upper = prop.test(n, subsample)$conf.int[2])
-  
+
+# what % of BD cases see GP, by age group
+yr2004 %>%
+  filter(anycd_ic == "Disorder present") %>%
+  mutate(chldage_group = case_when(
+    chldage <= 9 ~ "05 - 09",
+    chldage <= 14 ~ "10 - 14",
+    TRUE ~ "15 - 16"
+  )) %>%
+  count(chldage_group, contact_with_primary_care) %>%
+  group_by(chldage_group) %>%
+  mutate(gp_bd_rate = n / sum(n),
+         subsample = sum(n)) %>%
+  filter(contact_with_primary_care == 1) %>%
+  select(-contact_with_primary_care) %>%
+  mutate(lower = prop.test(n, subsample)$conf.int[1],
+         upper = prop.test(n, subsample)$conf.int[2])
+
 
 # BD vs. ADHD contact rates with primary care
 yr2004 %>%
