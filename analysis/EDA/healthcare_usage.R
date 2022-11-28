@@ -71,3 +71,6 @@ table(yr2004$anycd_ic, yr2004$contact_with_primary_care & yr2004$contact_with_mh
 
 # so what % have a BD *and* see both the GP & MHS about it?
 table(yr2004$anycd_ic, yr2004$contact_with_primary_care & yr2004$contact_with_mhs) %>% prop.table()
+
+# no contact with any services or informal support
+table(yr2004$anycd_ic, is.na(yr2004$whhelp01)) %>% prop.table(margin = 1)
